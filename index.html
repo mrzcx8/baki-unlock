@@ -49,6 +49,17 @@
             font-size: 14px;
             color: #555;
         }
+        .loading {
+            display: none;
+            font-size: 16px;
+            color: #ff6600;
+        }
+        .active {
+            color: green;
+        }
+        .expired {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -56,12 +67,13 @@
         <h2>Semak Baki Unlock</h2>
         <input type="text" id="nama" placeholder="Masukkan Nama Anda">
         <button onclick="checkBalance()">Semak</button>
+        <p class="loading" id="loading">Sedang menyemak...</p>
         <div id="result"></div>
         <p class="note">Nota: Sila pastikan anda memasukkan nama yang betul seperti dalam sistem.</p>
     </div>
 
     <script>
-        const url = "https://script.google.com/macros/s/AKfycbzJMKGlS6kG9XvmoE6YEydRpJjI5JEGGWWc5hFtXjLED9w0FJsR_PaOlyY1jnq-AXPUGQ/exec";
+        const url = "https://script.google.com/macros/s/AKfycbyROGo7DzceTrzmmKy7meBqAMA7obcTGZh0vR7QUQWdP4-VqonQE30tdILGmFkgSm6Ynw/exec";
 
         async function checkBalance() {
             const nama = document.getElementById("nama").value.trim();
@@ -70,17 +82,27 @@
                 return;
             }
 
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("result").innerHTML = "";
+
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                
                 let found = false;
+                const today = new Date();
+
                 for (let i = 0; i < data.length; i++) {
                     if (data[i].nama.toLowerCase() === nama.toLowerCase()) {
+                        let langgananTarikh = new Date(data[i].tarikh_langgan);
+                        let tamatTarikh = new Date(data[i].tarikh_tamat);
+                        let statusClass = tamatTarikh >= today ? "active" : "expired";
+                        let pakej = data[i].pakej ? data[i].pakej : "Tidak diketahui";
+
                         document.getElementById("result").innerHTML = `
+                            Pakej: ${pakej} <br>
                             Baki Unlock: ${data[i].baki} <br>
-                            Tarikh Langganan: ${data[i].tarikh_langgan} <br>
-                            Tarikh Tamat: ${data[i].tarikh_tamat}
+                            Tarikh Langganan: ${langgananTarikh.toLocaleDateString("ms-MY")} <br>
+                            Tarikh Tamat: <span class="${statusClass}">${tamatTarikh.toLocaleDateString("ms-MY")}</span>
                         `;
                         found = true;
                         break;
@@ -93,6 +115,8 @@
             } catch (error) {
                 document.getElementById("result").innerHTML = "Ralat mendapatkan data. Sila cuba lagi.";
             }
+
+            document.getElementById("loading").style.display = "none";
         }
     </script>
 </body>
