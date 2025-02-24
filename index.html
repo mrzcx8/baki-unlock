@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semak Baki Unlock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #004080;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            margin: auto;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 80%;
+            border: 1px solid #004080;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #004080;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #003366;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .note {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Semak Baki Unlock</h2>
+        <input type="text" id="nama" placeholder="Masukkan Nama Anda">
+        <button onclick="checkBalance()">Semak</button>
+        <div id="result"></div>
+        <p class="note">Nota: Sila pastikan anda memasukkan nama yang betul seperti dalam sistem.</p>
+    </div>
+
+    <script>
+        const url = "https://script.google.com/macros/s/AKfycby_9J-u-tDbwEKAqIHytCcVsSunHE9O4yVM8XPdG7gYzrH77JuBd3_3WET9iF34PaXb/exec";
+
+        async function checkBalance() {
+            const nama = document.getElementById("nama").value.trim();
+            if (!nama) {
+                document.getElementById("result").innerHTML = "Sila masukkan nama anda.";
+                return;
+            }
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                let found = false;
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].nama.toLowerCase() === nama.toLowerCase()) {
+                        document.getElementById("result").innerHTML = `
+                            Baki Unlock: ${data[i].baki} <br>
+                            Tarikh Langganan: ${data[i].tarikh_langgan} <br>
+                            Tarikh Tamat: ${data[i].tarikh_tamat}
+                        `;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    document.getElementById("result").innerHTML = "Nama tidak ditemui dalam sistem.";
+                }
+            } catch (error) {
+                document.getElementById("result").innerHTML = "Ralat mendapatkan data. Sila cuba lagi.";
+            }
+        }
+    </script>
+</body>
+</html>
